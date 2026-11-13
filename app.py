@@ -326,12 +326,12 @@ CLEAN_MISSING = int(df.isna().sum().sum())
 NUMERICAL_COUNT = len(NUMERIC_MEASURES)
 
 
-# ------------------------ SIDEBAR --------------------------
+# ------------------------ sidebar--------------------------
 
 with st.sidebar:
     st.markdown("# 🌙 Somnia")
     st.markdown("### INSIGHTS")
-    st.caption("Sleep health & lifestyle analytics")
+    st.caption("Sleep health & lifestyle analytic")
     st.markdown("---")
 
     page = st.radio(
