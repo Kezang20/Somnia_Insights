@@ -1,5 +1,13 @@
 # 5. REUSABLE DISPLAY AND ANALYSIS HELPERS
 
+import inspect
+
+# These names are provided by the app runtime (Streamlit, theme tokens, and
+# dataset-specific mappings), so keep the module lint-clean without changing
+# runtime behavior.
+# pyright: reportUndefinedVariable=false
+
+
 def _stretch_kwargs(fn):
     """New Streamlit uses width='stretch'; older versions use use_container_width."""
     try:

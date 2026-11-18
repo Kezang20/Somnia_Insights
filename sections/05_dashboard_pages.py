@@ -1,3 +1,4 @@
+
 # pyright: reportUndefinedVariable=false
 # 6. DASHBOARD PAGES
 # ============================================================
@@ -31,6 +32,32 @@ if page == "Overview":
                      color_discrete_sequence=[TEAL_CHART])
         fig.update_yaxes(showgrid=False, title=None)
         show(fig, 380, "Average sleep quality by occupation", "Score out of 10")
+
+    # Gender comparison using the full dataset
+    gender_quality = (df.groupby("Gender", as_index=False)
+                      .agg(**{"Average sleep quality": ("Quality of Sleep", "mean"),
+                              "Participants": ("Gender", "size")}))
+
+    fig = px.bar(
+        gender_quality,
+        x="Gender",
+        y="Average sleep quality",
+        color="Gender",
+        text=gender_quality["Average sleep quality"].round(2),
+        hover_data=["Participants"],
+        color_discrete_sequence=[TEAL_CHART, CORAL_CHART],
+    )
+
+    fig.update_traces(textposition="outside")
+    fig.update_yaxes(range=[0, 10], title="Average score out of 10")
+    fig.update_layout(showlegend=False, xaxis_title=None)
+
+    show(
+        fig,
+        340,
+        "Average sleep quality by gender",
+        "Direct comparison of the average self-reported sleep quality scores",
+    )
 
     r_duration, _ = correlation("Sleep Duration", "Quality of Sleep", filtered)
     r_stress, _ = correlation("Stress Level", "Quality of Sleep", filtered)
@@ -218,17 +245,35 @@ elif page == "Relationships":
     fig.update_yaxes(showgrid=False, title=None, autorange="reversed")
     show(fig, 380, "Correlation with sleep quality", "Pearson r, from -1 to 1")
 
-    st.subheader("Correlation heatmap")
-    heat_columns = ["Age", "Sleep Duration", "Quality of Sleep", "Physical Activity Level",
-                    "Stress Level", "Heart Rate", "Daily Steps"]
-    corr_matrix = filtered[heat_columns].corr()
+    # Replaced the correlation heatmap with a box plot
+    # showing sleep quality distribution by sleep disorder.
+    st.subheader("Sleep quality distribution by sleep disorder")
 
-    fig = go.Figure(data=go.Heatmap(
-        z=corr_matrix.values, x=corr_matrix.columns, y=corr_matrix.index, zmin=-1, zmax=1,
-        colorscale=[[0, CORAL_CHART], [.5, "#F8F9FA"], [1, TEAL_CHART]],
-        text=np.round(corr_matrix.values, 2), texttemplate="%{text}",
-    ))
-    show(fig, 480, "How every measure relates to every other", "Darker teal means a stronger positive link")
+    box_columns = ["Sleep Disorder", "Quality of Sleep"]
+    box_data = filtered[box_columns].dropna()
+
+    fig = px.box(
+        box_data,
+        x="Sleep Disorder",
+        y="Quality of Sleep",
+        color="Sleep Disorder",
+        category_orders={"Sleep Disorder": DISORDER_ORDER},
+        color_discrete_sequence=[TEAL_CHART, CORAL_CHART, SLATE_CHART],
+        points="outliers",
+    )
+
+    fig.update_layout(
+        showlegend=False,
+        xaxis_title="Sleep disorder group",
+        yaxis_title="Sleep quality score",
+    )
+
+    show(
+        fig,
+        420,
+        "Variation in sleep quality across disorder groups",
+        "The box shows the middle half of scores; points show values outside the typical range",
+    )
 
 
 # ============================================================
@@ -351,5 +396,3 @@ elif page == "Findings & conclusion":
         '</p></div>',
         unsafe_allow_html=True,
     )
-
-

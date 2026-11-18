@@ -1,5 +1,11 @@
 # 3. DATASET DEFINITIONS AND LOADING
 
+from pathlib import Path
+
+import pandas as pd
+import streamlit as st
+
+
 DATA_FILE = Path(__file__).with_name("Sleep_health_and_lifestyle_dataset_1000.csv")
 
 NUMERIC_MEASURES = [
